@@ -44,7 +44,9 @@ const maxPaddleX = myCanvas.width - grid - paddleWidth;
 const BRICK_WIDTH = 100;
 const BRICK_HEIGHT = 25;
 
-var paddleSpeed = 11;
+let lives = 3;
+
+var paddleSpeed = 15;
 var ballSpeed = 10;
 
 const paddle = {
@@ -74,11 +76,11 @@ const ball = {
 };
 
 const BRICKS_COLORS = {
-    1: "green",
-    2: "blue",
-    3: "yellow",
-    4: "orange",
-    5: "red",
+    1: "#ffdf00",
+    2: "#ffae00",
+    3: "#ff7d00",
+    4: "#ff0000",
+    5: "#630000",
 }
 
 const bricks = [
@@ -101,6 +103,19 @@ const bricks = [
     { x: 540, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
 ];
 
+let bricks_list = [];
+for (let i = grid * 2; i < myCanvas.width - grid * 2; i += BRICK_WIDTH + grid) {
+    for (let j = grid * 3; j < (myCanvas.height / 2) - 50; j += BRICK_HEIGHT + grid * 2) {
+        bricks_list.push({
+            x: i,
+            y: j,
+            width: BRICK_WIDTH,
+            height: BRICK_HEIGHT,
+            hp: Math.floor(Math.random() * 5) + 1
+        })
+    }
+}
+
 function collides(obj1, obj2) {
     return (
         obj1.x < obj2.x + obj2.width &&
@@ -111,9 +126,9 @@ function collides(obj1, obj2) {
 }
 
 function drawBricks() {
-    bricks.forEach((b) => {
+    bricks_list.forEach((b) => {
         ctx.fillStyle = BRICKS_COLORS[b.hp];
-        ctx.fillRect(b.x, b.y, BRICK_WIDTH, BRICK_HEIGHT);
+        ctx.fillRect(b.x, b.y, b.width, b.height);
     });
 }
 
@@ -133,7 +148,7 @@ function loop() {
     }
 
     // draw paddle
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "black";
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
     ball.x += ball.dx;
@@ -159,6 +174,7 @@ function loop() {
     // reset ball if it goes past paddle (but only if we haven't already done so)
     if (ball.y > myCanvas.width && !ball.resetting) {
         console.log("out");
+        lives--
         resetGame(true);
     }
 
@@ -172,11 +188,11 @@ function loop() {
     }
 
     let i = 0
-    bricks.forEach(b => {
+    bricks_list.forEach(b => {
         if (collides(ball, b)) {
             ball.dy *= -1;
             if (b.hp === 1) {
-                bricks.splice(i, 1);
+                bricks_list.splice(i, 1);
             } else {
                 b.hp--;
             }
@@ -209,18 +225,26 @@ function loop() {
 function resetGame(wait) {
     ball.resetting = true;
 
-    if (wait) {
-        // give some time for the player to recover before launching the ball again
-        setTimeout(() => {
+    if (lives === 0) {
+        let looseElement = document.getElementById("looseText");
+        looseElement.innerHTML = "Perdu nullos"
+
+    } else {
+        if (wait) {
+            // give some time for the player to recover before launching the ball again
+            setTimeout(() => {
+                ball.resetting = false;
+                ball.x = myCanvas.width / 2;
+                ball.y = myCanvas.height / 2;
+            }, 500);
+        } else {
             ball.resetting = false;
             ball.x = myCanvas.width / 2;
             ball.y = myCanvas.height / 2;
-        }, 500);
-    } else {
-        ball.resetting = false;
-        ball.x = myCanvas.width / 2;
-        ball.y = myCanvas.height / 2;
+        }
     }
+
+
 }
 
 // listen to keyboard events to move the paddles
