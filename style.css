@@ -1,0 +1,17 @@
+canvas {
+    background-color: #ccc;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0
+}
+
+.game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
