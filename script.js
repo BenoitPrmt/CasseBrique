@@ -299,15 +299,8 @@ document.addEventListener("keyup", function (e) {
 
 // start the game
 let startButton = document.getElementById("startButton");
-let resetButton = document.getElementById("resetButton");
 
 startButton.addEventListener("click", () => {
     requestAnimationFrame(loop);
-    resetButton.hidden = false;
     startButton.hidden = true;
-});
-
-// reset the game
-resetButton.addEventListener("click", () => {
-    resetGame(false)
 });
