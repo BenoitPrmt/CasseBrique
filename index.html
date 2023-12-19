@@ -8,15 +8,26 @@
 </head>
 <body>
     
-    <div class="buttons">
-        <button class="button" id="startButton">Commencer une partie</button>
-        <button class="button" id="resetButton" hidden>Reset</button>
+    <div class="header">
+        <div class="left-header">
+            <div class="buttons">
+                <button class="button" id="startButton">Commencer une partie</button>
+                <button class="button" id="resetButton" hidden>Reset</button>
+            </div>
+        
+            <div class="textes">
+                <p id="lives">3 vies restantes</p>
+                <p id="finishText"></p>
+            </div>
+        </div>
+        <div class="right-header">
+
+        </div>
     </div>
 
-    <p id="looseText"></p>
-
     <div class="game">
-        <canvas width="750" height="585" id="myCanvas"></canvas>
+        <!-- style="background-color: black;"  -->
+        <canvas style="background-color: black;" width="750" height="585" id="myCanvas"></canvas> 
     </div>
 
     <script src="script.js"></script>

@@ -33,7 +33,6 @@ function createGrid() {
         ctx.stroke();
     }
 }
-createGrid();
 
 // ---------------------------------------
 
@@ -44,6 +43,8 @@ const maxPaddleX = myCanvas.width - grid - paddleWidth;
 const BRICK_WIDTH = 100;
 const BRICK_HEIGHT = 25;
 
+let finishElement = document.getElementById("finishText");
+let livesElement = document.getElementById("lives")
 let lives = 3;
 
 var paddleSpeed = 15;
@@ -76,11 +77,12 @@ const ball = {
 };
 
 const BRICKS_COLORS = {
-    1: "#ffdf00",
-    2: "#ffae00",
-    3: "#ff7d00",
-    4: "#ff0000",
-    5: "#630000",
+    1: "#fff1a1",
+    2: "#ffdf00",
+    3: "#ffae00",
+    4: "#ff7d00",
+    5: "#ff0000",
+    // 5: "#630000",
 }
 
 const bricks = [
@@ -105,7 +107,7 @@ const bricks = [
 
 let bricks_list = [];
 for (let i = grid * 2; i < myCanvas.width - grid * 2; i += BRICK_WIDTH + grid) {
-    for (let j = grid * 3; j < (myCanvas.height / 2) - 50; j += BRICK_HEIGHT + grid * 2) {
+    for (let j = grid * 3; j < (myCanvas.height / 2) - 50; j += BRICK_HEIGHT + grid * 2) { // (myCanvas.height / 2) - 50
         bricks_list.push({
             x: i,
             y: j,
@@ -138,6 +140,11 @@ function loop() {
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
     // createGrid();
 
+    if (bricks_list.length === 0) {
+        finishElement.innerHTML = "Gagné !";
+        livesElement.style.display = "none";
+    }
+
     paddle.x += paddle.dx;
 
     // prevent paddles from going through walls
@@ -148,7 +155,7 @@ function loop() {
     }
 
     // draw paddle
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
     ball.x += ball.dx;
@@ -202,7 +209,7 @@ function loop() {
 
     // draw ball
     ctx.beginPath();
-    ctx.fillStyle = `black`;
+    ctx.fillStyle = `white`;
     ctx.arc(
         ball.x,
         ball.y,
@@ -214,7 +221,7 @@ function loop() {
     ctx.fill();
 
     // draw walls
-    ctx.fillStyle = "lightgrey";
+    ctx.fillStyle = "white";
     ctx.fillRect(0, 0, myCanvas.width, grid);
     ctx.fillRect(0, 0, grid, myCanvas.height);
     ctx.fillRect(myCanvas.width - grid, 0, myCanvas.width, myCanvas.height);
@@ -224,10 +231,10 @@ function loop() {
 
 function resetGame(wait) {
     ball.resetting = true;
+    livesElement.innerHTML = lives + ' vies restantes'
 
     if (lives === 0) {
-        let looseElement = document.getElementById("looseText");
-        looseElement.innerHTML = "Perdu nullos"
+        finishElement.innerHTML = "Perdu !"
 
     } else {
         if (wait) {
@@ -243,8 +250,6 @@ function resetGame(wait) {
             ball.y = myCanvas.height / 2;
         }
     }
-
-
 }
 
 // listen to keyboard events to move the paddles
@@ -266,6 +271,17 @@ document.addEventListener("keyup", function (e) {
     }
 });
 
-console.log("script");
+// start the game
+let startButton = document.getElementById("startButton");
+let resetButton = document.getElementById("resetButton");
 
-requestAnimationFrame(loop);
+startButton.addEventListener("click", () => {
+    requestAnimationFrame(loop);
+    resetButton.hidden = false;
+    startButton.hidden = true;
+});
+
+// reset the game
+resetButton.addEventListener("click", () => {
+    resetGame(false)
+});
