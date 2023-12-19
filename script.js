@@ -73,17 +73,32 @@ const ball = {
     dy: -ballSpeed,
 };
 
+const BRICKS_COLORS = {
+    1: "green",
+    2: "blue",
+    3: "yellow",
+    4: "orange",
+    5: "red",
+}
+
 const bricks = [
-    { x: 100, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 210, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 320, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 430, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 540, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 100, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 210, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 320, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 430, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT },
-    { x: 540, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT },
+    { x: 100, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
+    { x: 210, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
+    { x: 320, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 5 },
+    { x: 430, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
+    { x: 540, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
+
+    { x: 100, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
+    { x: 210, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
+    { x: 320, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
+    { x: 430, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
+    { x: 540, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
+
+    { x: 100, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
+    { x: 210, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
+    { x: 320, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
+    { x: 430, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
+    { x: 540, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
 ];
 
 function collides(obj1, obj2) {
@@ -96,8 +111,8 @@ function collides(obj1, obj2) {
 }
 
 function drawBricks() {
-    ctx.fillStyle = "blue";
     bricks.forEach((b) => {
+        ctx.fillStyle = BRICKS_COLORS[b.hp];
         ctx.fillRect(b.x, b.y, BRICK_WIDTH, BRICK_HEIGHT);
     });
 }
@@ -106,7 +121,7 @@ function loop() {
     requestAnimationFrame(loop);
     // RESET DRAW
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    createGrid();
+    // createGrid();
 
     paddle.x += paddle.dx;
 
@@ -118,7 +133,7 @@ function loop() {
     }
 
     // draw paddle
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "red";
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
     ball.x += ball.dx;
@@ -160,7 +175,11 @@ function loop() {
     bricks.forEach(b => {
         if (collides(ball, b)) {
             ball.dy *= -1;
-            bricks.splice(i, 1);
+            if (b.hp === 1) {
+                bricks.splice(i, 1);
+            } else {
+                b.hp--;
+            }
         }
         i++
     });
