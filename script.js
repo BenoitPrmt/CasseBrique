@@ -37,8 +37,7 @@ function createGrid() {
 // ---------------------------------------
 
 const grid = 15;
-// const paddleWidth = grid * 10; // 150
-const paddleWidth = myCanvas.width; // 150
+const paddleWidth = grid * 10; // 150
 const maxPaddleX = myCanvas.width - grid - paddleWidth;
 
 const BRICK_WIDTH = 100;
@@ -50,8 +49,8 @@ let lives = 3;
 
 let bossSeen = false;
 
-var paddleSpeed = 15;
-var ballSpeed = 20;
+var paddleSpeed = 12;
+var ballSpeed = 6;
 
 const paddle = {
     // start in the middle of the game on the left side
@@ -115,14 +114,17 @@ const bricks = [
 
 let bricks_list = [];
 for (let i = grid * 2; i < myCanvas.width - grid * 2; i += BRICK_WIDTH + grid) {
-    for (let j = grid * 3; j < (myCanvas.height / 2) - 50; j += BRICK_HEIGHT + grid * 2) { // (myCanvas.height / 2) - 50
+    let rowQty = 0;
+    for (let j = grid * 3; j < (myCanvas.height / 2) - 50; j += BRICK_HEIGHT + grid * 2) {
+        if (rowQty === 3) break;
         bricks_list.push({
             x: i,
             y: j,
             width: BRICK_WIDTH,
             height: BRICK_HEIGHT,
             hp: Math.floor(Math.random() * 5) + 1
-        })
+        });
+        rowQty++
     }
 }
 
@@ -163,6 +165,7 @@ function loop() {
         } else {
             finishElement.innerHTML = "Gagné !";
             livesElement.style.display = "none";
+            lives = 0
         }
     }
 
