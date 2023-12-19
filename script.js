@@ -37,7 +37,8 @@ function createGrid() {
 // ---------------------------------------
 
 const grid = 15;
-const paddleWidth = grid * 10; // 150
+// const paddleWidth = grid * 10; // 150
+const paddleWidth = myCanvas.width; // 150
 const maxPaddleX = myCanvas.width - grid - paddleWidth;
 
 const BRICK_WIDTH = 100;
@@ -47,8 +48,10 @@ let finishElement = document.getElementById("finishText");
 let livesElement = document.getElementById("lives")
 let lives = 3;
 
+let bossSeen = false;
+
 var paddleSpeed = 15;
-var ballSpeed = 10;
+var ballSpeed = 20;
 
 const paddle = {
     // start in the middle of the game on the left side
@@ -82,7 +85,12 @@ const BRICKS_COLORS = {
     3: "#ffae00",
     4: "#ff7d00",
     5: "#ff0000",
-    // 5: "#630000",
+    // 5: "#630000", // dark red
+    6: "#5c0000",
+    7: "#5c0000",
+    8: "#3d0000",
+    9: "#270000",
+    10: "black"
 }
 
 const bricks = [
@@ -118,6 +126,14 @@ for (let i = grid * 2; i < myCanvas.width - grid * 2; i += BRICK_WIDTH + grid) {
     }
 }
 
+let brick_boss = {
+    x: myCanvas.width / 2 - grid * 3,
+    y: myCanvas.height / 2,
+    width: BRICK_WIDTH / 1.5,
+    height: BRICK_HEIGHT,
+    hp: 10
+}
+
 function collides(obj1, obj2) {
     return (
         obj1.x < obj2.x + obj2.width &&
@@ -141,10 +157,16 @@ function loop() {
     // createGrid();
 
     if (bricks_list.length === 0) {
-        finishElement.innerHTML = "Gagné !";
-        livesElement.style.display = "none";
+        if (!bossSeen) {
+            bricks_list.push(brick_boss);
+            bossSeen = true
+        } else {
+            finishElement.innerHTML = "Gagné !";
+            livesElement.style.display = "none";
+        }
     }
 
+    // move paddle
     paddle.x += paddle.dx;
 
     // prevent paddles from going through walls
@@ -158,6 +180,7 @@ function loop() {
     ctx.fillStyle = "white";
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
+    // move ball
     ball.x += ball.dx;
     ball.y += ball.dy;
 
