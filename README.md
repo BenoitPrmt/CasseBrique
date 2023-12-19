@@ -42,6 +42,7 @@ The following tools were used in this project:
 ## :white_check_mark: Requirements ##
 
 Before starting :checkered_flag:, you need to have [Git](https://git-scm.com).
+You need to install the font in the `fonts` folder to have the better experience.
 
 ## :checkered_flag: Starting ##
 
@@ -52,7 +53,7 @@ $ git clone https://github.com/BenoitPrmt/CasseBrique
 # Access
 $ cd CasseBrique
 
-# Launch the project with VSCode Live Server or other web server
+# Launch the project with VSCode Live Server or launch the index.html file in browser
 ```
 
 ## :memo: License ##
