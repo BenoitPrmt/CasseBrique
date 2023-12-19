@@ -1,41 +1,6 @@
 const myCanvas = document.getElementById("myCanvas");
 let ctx = myCanvas.getContext("2d");
 
-function createGrid() {
-    const CANVA_WIDTH = myCanvas.getAttribute("width");
-    const CANVA_HEIGHT = myCanvas.getAttribute("height");
-
-    for (let i = 0; i < CANVA_WIDTH; i += 10) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-
-        if (i % 100 === 0) {
-            ctx.strokeStyle = "green";
-        } else {
-            ctx.strokeStyle = "red";
-        }
-
-        ctx.lineTo(i, CANVA_HEIGHT);
-        ctx.stroke();
-    }
-
-    for (let i = 0; i < CANVA_HEIGHT; i += 10) {
-        ctx.beginPath();
-        ctx.moveTo(0, i);
-
-        if (i % 100 === 0) {
-            ctx.strokeStyle = "green";
-        } else {
-            ctx.strokeStyle = "red";
-        }
-
-        ctx.lineTo(CANVA_WIDTH, i);
-        ctx.stroke();
-    }
-}
-
-// ---------------------------------------
-
 const grid = 15;
 const paddleWidth = grid * 10; // 150
 const maxPaddleX = myCanvas.width - grid - paddleWidth;
@@ -44,47 +9,37 @@ const BRICK_WIDTH = 100;
 const BRICK_HEIGHT = 25;
 
 let finishElement = document.getElementById("finishText");
-let livesElement = document.getElementById("lives")
+let livesElement = document.getElementById("lives");
 let lives = 3;
 
-let bossSeen = false;
+let bossSaw = false;
 
 var paddleSpeed = 12;
 var ballSpeed = 6;
 
-const paddle = {
-    // start in the middle of the game on the left side
-    x: myCanvas.width / 2 - paddleWidth / 2,
-    y: myCanvas.height - grid * 2,
-    width: paddleWidth,
-    height: grid,
+const paddle = new Paddle(
+    myCanvas.width / 2 - paddleWidth / 2, // x
+    myCanvas.height - grid * 2, // y
+    paddleWidth, // width
+    grid, // height
+    0 // dx
+);
 
-    // paddle velocity
-    dx: 0,
-};
-
-const ball = {
-    // start in the middle of the game
-    x: myCanvas.width / 2,
-    y: myCanvas.height / 2,
-    width: grid,
-    height: grid,
-
-    // keep track of when need to reset the ball position
-    resetting: false,
-
-    // ball velocity (start going to the top-right corner)
-    dx: ballSpeed,
-    dy: -ballSpeed,
-};
+const ball = new Ball(
+    myCanvas.width / 2, // x
+    myCanvas.height / 2, // y
+    grid, // width
+    grid, // height
+    ballSpeed, // dx
+    -ballSpeed, // dy
+)
 
 const BRICKS_COLORS = {
     1: "#fff1a1",
     2: "#ffdf00",
     3: "#ffae00",
     4: "#ff7d00",
-    5: "#ff0000",
-    // 5: "#630000", // dark red
+    5: "#ff0000", // #630000 : dark red
     6: "#5c0000",
     7: "#5c0000",
     8: "#3d0000",
@@ -92,49 +47,32 @@ const BRICKS_COLORS = {
     10: "black"
 }
 
-const bricks = [
-    { x: 100, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
-    { x: 210, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
-    { x: 320, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 5 },
-    { x: 430, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
-    { x: 540, y: 60, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 3 },
-
-    { x: 100, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
-    { x: 210, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
-    { x: 320, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
-    { x: 430, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
-    { x: 540, y: 100, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 2 },
-
-    { x: 100, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
-    { x: 210, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
-    { x: 320, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
-    { x: 430, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
-    { x: 540, y: 140, width: BRICK_WIDTH, height: BRICK_HEIGHT, hp: 1 },
-];
 
 let bricks_list = [];
 for (let i = grid * 2; i < myCanvas.width - grid * 2; i += BRICK_WIDTH + grid) {
     let rowQty = 0;
     for (let j = grid * 3; j < (myCanvas.height / 2) - 50; j += BRICK_HEIGHT + grid * 2) {
         if (rowQty === 3) break;
-        bricks_list.push({
-            x: i,
-            y: j,
-            width: BRICK_WIDTH,
-            height: BRICK_HEIGHT,
-            hp: Math.floor(Math.random() * 5) + 1
-        });
+        bricks_list.push(
+            new Brick(
+                i, // x
+                j, // y
+                BRICK_WIDTH, // width
+                BRICK_HEIGHT, // height
+                Math.floor(Math.random() * 5) + 1 // hp
+            )
+        );
         rowQty++
     }
 }
 
-let brick_boss = {
-    x: myCanvas.width / 2 - grid * 3,
-    y: myCanvas.height / 2,
-    width: BRICK_WIDTH / 1.5,
-    height: BRICK_HEIGHT,
-    hp: 10
-}
+let brick_boss = new Brick(
+    myCanvas.width / 2 - grid * 3,
+    myCanvas.height / 2,
+    BRICK_WIDTH / 1.5,
+    BRICK_HEIGHT,
+    10
+)
 
 function collides(obj1, obj2) {
     return (
@@ -159,9 +97,9 @@ function loop() {
     // createGrid();
 
     if (bricks_list.length === 0) {
-        if (!bossSeen) {
+        if (!bossSaw) {
             bricks_list.push(brick_boss);
-            bossSeen = true
+            bossSaw = true
         } else {
             finishElement.innerHTML = "Gagné !";
             livesElement.style.display = "none";
@@ -170,7 +108,7 @@ function loop() {
     }
 
     // move paddle
-    paddle.x += paddle.dx;
+    paddle.movePaddle()
 
     // prevent paddles from going through walls
     if (paddle.x < grid) {
@@ -184,22 +122,20 @@ function loop() {
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
     // move ball
-    ball.x += ball.dx;
-    ball.y += ball.dy;
+    // ball.x += ball.dx;
+    // ball.y += ball.dy;
+    ball.moveBall()
 
     // prevent ball from going through walls by changing its velocity
-    // top wall
-    if (ball.y < grid) {
+    if (ball.y < grid) { // top wall
         ball.y = grid;
         ball.dy *= -1;
     }
 
-    // left wall
-    if (ball.x < grid) {
+    if (ball.x < grid) { // left wall
         ball.x = grid;
         ball.dx *= -1;
-    } else if (ball.x + grid > myCanvas.width - grid) {
-        // right wall
+    } else if (ball.x + grid > myCanvas.width - grid) { // right wall
         ball.x = myCanvas.width - grid * 2;
         ball.dx *= -1;
     }
@@ -277,30 +213,3 @@ function resetGame(wait) {
         }
     }
 }
-
-// listen to keyboard events to move the paddles
-document.addEventListener("keydown", function (e) {
-    // up arrow key
-    if (e.key === "ArrowLeft") {
-        paddle.dx = -paddleSpeed;
-    }
-    // down arrow key
-    else if (e.key === "ArrowRight") {
-        paddle.dx = paddleSpeed;
-    }
-});
-
-// listen to keyboard events to stop the paddle if key is released
-document.addEventListener("keyup", function (e) {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-        paddle.dx = 0;
-    }
-});
-
-// start the game
-let startButton = document.getElementById("startButton");
-
-startButton.addEventListener("click", () => {
-    requestAnimationFrame(loop);
-    startButton.hidden = true;
-});

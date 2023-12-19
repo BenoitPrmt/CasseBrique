@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CasseBrique</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style/style.css">
     <link rel="shortcut icon" href="/assets/favicon.png" type="image/x-icon">
 </head>
 <body>
@@ -16,6 +16,7 @@
             </div>
         
             <div class="textes">
+                <p>Déplacez vous avec ← et →</p>
                 <p id="lives">3 vies restantes</p>
                 <p id="finishText"></p>
             </div>
@@ -30,6 +31,10 @@
         <canvas style="background-color: black;" width="750" height="585" id="myCanvas"></canvas> 
     </div>
 
-    <script src="script.js"></script>
+    <script src="scripts/classes/Brick.js"></script>
+    <script src="scripts/classes/Ball.js"></script>
+    <script src="scripts/classes/Paddle.js"></script>
+    <script src="scripts/functions.js"></script>
+    <script src="scripts/script.js"></script>
 </body>
 </html>
