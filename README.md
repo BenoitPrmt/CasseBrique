@@ -22,6 +22,8 @@
 
 <br>
 
+<img src="assets/brickshp.jpeg">
+
 ## :dart: About ##
 
 The brick breaker game in JavaScript with the canvas API.

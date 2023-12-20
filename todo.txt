@@ -1,2 +1,1 @@
-- Passer le code en POO
-- Découper le code en plusieurs fichiers
+- Expliquer couleurs des briques dans le readme
