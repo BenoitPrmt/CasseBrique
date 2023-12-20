@@ -22,7 +22,7 @@
 
 <br>
 
-<img src="assets/brickshp.jpeg">
+<img src="assets/brickshp.png">
 
 ## :dart: About ##
 
